@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Component
 public class Device {
   
@@ -17,11 +19,16 @@ public class Device {
     this.hm = new HashMap<String, Specs>();
   }
   
+  public Device()
+  {
+  }
+  
   public String getName()
   {
     return name;
   }
   
+  @JsonProperty("specs")
   public Map<String, Specs> getMap()
   {
     return hm;

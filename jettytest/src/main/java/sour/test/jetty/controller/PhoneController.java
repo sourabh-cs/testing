@@ -20,7 +20,7 @@ import sour.test.jetty.phones.Product;
 import sour.test.jetty.planet.Planet;
 
 @RestController
-public class PlanetController {
+public class PhoneController {
   
   Map<String, Brand> phones = new HashMap<String, Brand>();
   

@@ -18,9 +18,24 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
       <param-value>sour.test.jetty.springconfig</param-value>
     </init-param>
   </servlet>
+  
+  
+    <servlet>  
+        <servlet-name>staticserv</servlet-name>  
+        <servlet-class>  
+            org.springframework.web.servlet.DispatcherServlet  
+        </servlet-class>  
+      <init-param>  
+            <param-name>contextConfigLocation</param-name><param-value>/WEB-INF/spring/sample-servlet.xml</param-value></init-param>  
+        <load-on-startup>1</load-on-startup>  
+    </servlet>  
  
   <servlet-mapping>
     <servlet-name>sample</servlet-name>
+    <url-pattern>asadasdas/</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>staticserv</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
  

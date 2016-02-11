@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>CSPhoneHub</title>
+<link rel="stylesheet" type="text/css" href="style/style.css" />
+<script src="script/jquery-2.1.3.min.js"></script>
+<script src="script/phones.js"></script>
+<script src="script/script.js"></script>
+<script>
+$(document).ready(function() {
+	var rootstart = '<div class="tree root" id="tree-root"><input type="checkbox" id="root" /><label for="root">Phones</label>';
+	var rootend = '</div>';
+	var brandstart = '<div class="tree brand"><input type="checkbox" id="{0}" /><label for="{0}">{0}</label>';
+	var brandend = '</div>';
+	var productstart = '<div class="tree product"><input type="checkbox" id="{0}" /><label for="{0}">{0}</label>';
+	var productend = '</div>';
+	var devicestart = '<div class="tree device" id={1}>{0}';
+	var deviceend = '</div>';
+
+	var row = '<tr><td>{0}</td><td>{1}</td></tr>';
+	//$.getJSON( "phones.json", function( data ) {});
+	var phones = [];
+	var count = 0;
+	
+	var url = "http://localhost:8080/jettytest/phones";
+
+	var update = function() {
+	
+		$.getJSON(url, function( data ) {
+
+			var htmlgen = "";
+			htmlgen += rootstart;
+			$.each(data, function(i, brand) {
+				console.log(brand.name);
+				htmlgen += brandstart.format(brand.name);
+				
+				//htmlgen += '<div class="tree product add-product">Add New Product</div>';
+				$.each(brand.map, function(i, product) {
+					console.log("   {0}".format(product.name));
+					htmlgen += productstart.format(product.name);
+					
+					//htmlgen += '<div class="tree device add-device">Add New Device</div>';
+					$.each(product.map, function(i, device) {
+						console.log("      {0}".format(device.name));
+						phones.push(new Phone(brand.name, device.name, device.imageurl, device.specs));
+						htmlgen += devicestart.format(device.name, count);
+						count += 1;
+						htmlgen += deviceend;
+					});
+					htmlgen += productend;
+				});
+				htmlgen += brandend;
+			});
+			htmlgen += rootend;
+			console.log("Length: " + htmlgen.length);
+			$('#phone-tree').html(htmlgen);
+			
+			
+			$('.tree').hide();
+			$('.root').show();
+
+			$('input[type="checkbox"]').click(function(e){
+				var divSiblings = $(this).siblings('div');
+				if(divSiblings.length === 0)
+					$(this).parent().append('<div class="nocontent"><em>No content yet</em></div>');
+				divSiblings.toggle(300);
+				$('label').removeClass('highlight');
+				$(this).siblings('label').toggleClass('highlight');
+				//e.stopPropagation();
+			});
+			
+		});
+	};
+	
+	var addBrand = function(brand) {
+		$.post(url + '/new', brand, function(data) {
+			console.log(data);
+			update();
+		});
+	}
+	
+	var addProduct = function(brand, product) {
+		$.post(url + '/{0}/new'.format(brand), product, function(data) {
+			console.log(data);
+			update();
+		});
+	};
+	
+	var addDevice = function(brand, product, device) {
+		$.post(url + '/{0}/{1}/new'.format(brand, product), device, function(data) {
+			console.log(data);
+			update();
+		});
+	};
+	
+	$('.add-product').click(function(e){
+		var product = prompt('Enter product');
+		if (product == null)
+			return;
+		var brand = $(this).siblings('input')[0].id;
+		console.log(brand + ": " + product);
+		addProduct(brand, product);
+	});
+	
+	
+	$('.add-device').click(function(e){
+		var device = prompt('Enter device');
+		if (device == null)
+			return;
+		var product = $(this).siblings('input')[0].id;
+		var brand = $(this).parent().siblings('input')[0].id;
+		console.log(brand + ": " + product + ": " + device);
+		addDevice(brand, product, device);
+	});
+	
+	
+	//$('.tree').click(function(e) {
+	//	$(this).children('div').toggle(500);
+	//	e.stopPropagation();
+	//});
+	
+	$('.add-button').click(function(e) {
+		var highlighted = $('.highlight');
+		if (highlighted.parent().hasClass('root')) {
+			var brand = prompt("Enter brand");
+			if (brand == null)
+				return;
+			addBrand(brand);
+		} else if (highlighted.parent().hasClass('brand')) {
+			var product = prompt('Enter product');
+			if (product == null)
+				return;
+			var brand = highlighted.siblings('input')[0].id;
+			console.log(brand + ": " + product);
+			addProduct(brand, product);
+		} else if (highlighted.parent().hasClass('product')) {
+			var device = prompt('Enter device');
+			if (device == null)
+				return;
+			var product = highlighted.siblings('input')[0].id;
+			var brand = highlighted.parent().siblings('input')[0].id;
+			console.log(brand + ": " + product + ": " + device);
+			addDevice(brand, product, device);
+			return;
+		}
+	});
+	
+update();
+
+
+});
+</script>
+<style>
+</style>
+</head>
+
+<body>
+	<header>
+		<h1>CSPhoneHub</h1>
+	</header>
+	<div class="container">
+			<div class="add-button">+</div>
+		<section id="phone-tree">
+			
+		</section>
+	</div>
+
+</body>
+
+</html>
