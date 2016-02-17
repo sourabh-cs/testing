@@ -1,0 +1,132 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+header {
+    padding: 25px;
+    background: #f57c00;
+    color: #fff;
+    font-family: Cambria;
+}
+h1 {
+    text-align: center;
+}
+h2 {
+    text-align: center;
+    font-weight: normal;
+}
+.container {
+    padding-top: 50px;
+	position: relative;
+}
+.tree {
+    padding: 10px;
+	position: relative;
+}
+.tree-hover {
+    color: #999;
+}
+.root {
+    margin-left: 10px;
+}
+.brand {
+    margin-left: 30px;
+}
+.product {
+    margin-left: 20px;
+}
+.device {
+    margin-left: 20px;
+	padding-left: 18px;
+	background: url('../img/ic-phone.png');
+	background-repeat: no-repeat;
+	background-position: 15px 16px;
+	background-size: 12px;
+}
+.device::before {
+    content: "\0000a0";
+    background: url("../img/ic-phone.png") no-repeat;
+}
+#list-phones {
+    float: left;
+    min-width: 30%;
+}
+#specs {
+    float: right;
+    margin: 10px;
+    min-width: 60%;
+    text-align: center;
+}
+.device-info {
+    text-align: center;
+}
+table {
+    border: 1px solid #f57c00;
+    font-size: 10pt;
+    width: 80%;
+    margin: 20px auto;
+}
+td {
+    padding: 10px;
+}
+tr:nth-child(even) {
+    background-color: #f57c00;
+    color: #fff;
+}
+.add-button {
+width: 20px;
+height: 20px;
+background-color: #2bc36a;
+display: inline;
+border-radius: 50%;
+color: #fff;
+font-weight: bold;
+cursor: pointer;
+box-shadow: 0 0 3px #666;
+padding: 10px 8px 16px 16px;
+position: absolute;
+top: 10px;
+margin-left: auto;
+margin-right: auto;
+left: 0;
+right: 0;
+}
+.add-device {
+	background: none;
+}
+input[type="checkbox"] {
+	position: absolute;
+	left: 0;
+	top: 13px;
+	visibility: hidden;
+}
+label {
+	margin-left: 5px;
+	cursor: pointer;
+	padding: 5px;
+}
+input[type=checkbox]:before { content:""; display:inline-block; width:16px; height:16px; background:red;
+	visibility: visible; }
+input[type=checkbox]:checked:before { background:green;
+	visibility: visible; }
+/* images */
+input[type=checkbox]:before { background: url('../img/unchecked.png') no-repeat;
+background-size: 18px;
+
+}
+input[type=checkbox]:checked:before{ background: url('../img/checked.png') no-repeat;
+background-size: 18px;
+}
+
+.highlight {
+	background-color: #2bc36a;
+}
+
+.nocontent {
+	margin-left: 10px;
+	margin-top: 5px;
+	display: none;
+}

@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'jetty'
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+	compile 'org.springframework:spring-context:4.2.4.RELEASE'
+    compile 'org.springframework:spring-context:4.2.4.RELEASE'
+    compile 'org.springframework:spring-core:4.2.4.RELEASE'
+    compile 'org.springframework:spring-beans:4.2.4.RELEASE'
+    compile 'org.springframework:spring-expression:4.2.4.RELEASE'
+    compile 'org.springframework:spring-web:4.2.4.RELEASE'
+    compile 'org.springframework:spring-webmvc:4.2.4.RELEASE'
+    compile 'commons-logging:commons-logging:1.1'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.0'
+    
+}
