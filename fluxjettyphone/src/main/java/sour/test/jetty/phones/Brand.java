@@ -16,6 +16,13 @@ public class Brand {
   {
   }
   
+  public Brand(String name)
+  {
+    this.brandId = 54;
+    this.brandName = name;
+    this.products = new HashMap<Integer, Product>();
+  }
+  
   public Brand(int id, String name)
   {
     this.brandId = id;
@@ -31,6 +38,11 @@ public class Brand {
   public String getName()
   {
     return brandName;
+  }
+  
+  public void setName(String name)
+  {
+    brandName = name;
   }
   
   public Map<Integer, Product> getProducts()

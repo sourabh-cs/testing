@@ -11,9 +11,13 @@ var Device = React.createClass({
 	render: function() {
 		return (
 			<div className="tree device">
-				<input type="checkbox" id={this.props.id} onClick={this.props.toggle.bind(null, this, this.props.id)} />
+				<input type="checkbox" id={this.props.id} onClick={this.props.toggle.bind(null, this)} />
 				<label htmlFor={this.props.id} className={this.state.highlight ? "highlight" : ""}>{this.props.name}</label>
-					{(this.props.content.length === 0) ? <div className="tree nocontent"><em>No content yet</em></div> : null}
+				{(this.state.highlight)
+				? (	(this.props.content.length === 0) 
+					?  <div className="tree nocontent"><em>No content yet</em></div> 
+					: null) 
+				: null}
 			</div>
 		);
 	}

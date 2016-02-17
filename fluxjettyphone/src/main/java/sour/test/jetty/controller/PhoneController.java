@@ -19,6 +19,12 @@ public class PhoneController {
   
   PhoneRoot root = new PhoneRoot();
   
+  @RequestMapping(value = "test/new", method = RequestMethod.POST)
+  public @ResponseBody Brand testPost(@RequestBody Brand brand)
+  {
+    return brand;
+  }
+  
   @RequestMapping(value = "phones")
   public @ResponseBody Map<Integer, String> getBrandNames()
   {
@@ -34,11 +40,9 @@ public class PhoneController {
   }
   
   @RequestMapping(value = "phones/new", method = RequestMethod.POST)
-  public @ResponseBody Brand addBrand(@RequestBody String brandName)
+  public @ResponseBody Brand addBrand(@RequestBody Brand brand)
   {
-    if (brandName.endsWith("="))
-      brandName = brandName.substring(0, brandName.length() - 1);
-    return root.addBrand(brandName);
+    return root.addBrand(brand.getName());
   }
   
   @RequestMapping(value = "phones/{brandId}", method = RequestMethod.GET)
@@ -48,12 +52,10 @@ public class PhoneController {
   }
   
   @RequestMapping(value = "phones/{brandId}/new", method = RequestMethod.POST)
-  public @ResponseBody Product addProduct(@RequestBody String productName,
+  public @ResponseBody Product addProduct(@RequestBody Product product,
       @PathVariable("brandId") int brandId)
   {
-    if (productName.endsWith("="))
-      productName = productName.substring(0, productName.length() - 1);
-    return root.addProduct(brandId, productName);
+    return root.addProduct(brandId, product.getName());
   }
   
   @RequestMapping(value = "phones/{brandId}/{productId}", method = RequestMethod.GET)
@@ -64,11 +66,9 @@ public class PhoneController {
   }
   
   @RequestMapping(value = "phones/{brandId}/{productId}/new", method = RequestMethod.POST)
-  public @ResponseBody Device addDevice(@RequestBody String deviceName,
+  public @ResponseBody Device addDevice(@RequestBody Device device,
       @PathVariable("brandId") int brandId, @PathVariable("productId") int productId)
   {
-    if (deviceName.endsWith("="))
-      deviceName = deviceName.substring(0, deviceName.length() - 1);
-    return root.addDevice(brandId, productId, deviceName);
+    return root.addDevice(brandId, productId, device.getName());
   }
 }

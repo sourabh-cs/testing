@@ -18,10 +18,13 @@ var Brand = React.createClass({
 		}.bind(this));
 		return (
 			<div className="tree brand" tag={this.props.name}>
-				<input type="checkbox" id={this.props.id} onClick={this.props.toggle.bind(null, this, this.props.id, 'brand', this.props.id)} />
+				<input type="checkbox" id={this.props.id} onClick={this.props.toggle.bind(null, this, 'brand', this.props.id)} />
 				<label htmlFor={this.props.id} className={this.state.highlight ? "highlight" : ""}>{this.props.name}</label>
-					{(this.props.products.length === 0) ? <div className="tree nocontent"><em>No products yet</em></div> : null}
-				{productnodes}
+				{(this.state.highlight)
+				? (	(this.props.products.length === 0)
+					? <div className="tree nocontent"><em>No products yet</em></div>
+					: productnodes)
+				: null}
 			</div>
 		);
 	}

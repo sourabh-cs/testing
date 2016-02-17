@@ -33,6 +33,11 @@ public class Device {
     return deviceName;
   }
   
+  public void setName(String name)
+  {
+    deviceName = name;
+  }
+  
   public Map<Integer, Specs> getSpecs()
   {
     return specs;

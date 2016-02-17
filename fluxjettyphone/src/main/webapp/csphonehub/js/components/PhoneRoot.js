@@ -9,7 +9,7 @@ var BrandStore = require('../stores/BrandStore');
 	
 var PhoneRoot = React.createClass({
 	getInitialState: function() {
-		return {brands: [], highlight: false, gotItems: false, products: []};
+		return {brands: [], highlight: false, gotItems: false};
 	},
 	componentDidMount: function() {
 		emitter.on("got-all-brands", function(){
@@ -70,28 +70,12 @@ var PhoneRoot = React.createClass({
 			this.addDevice(htmlfor[0], htmlfor[1]);
 		}
 	},
-	checkToggle: function(ctx, elem, type, brandId, productId) {
-		var curr = document.getElementById(elem);
-		if (curr != null) {
-			var siblings = curr.parentNode.childNodes;
-			for(var i = 0; i < siblings.length; i++) {
-				var sib = siblings[i];
-				if (sib.localName === 'div') {
-					var display = window.getComputedStyle(sib).getPropertyValue("display");
-					if (display !== 'none')
-						sib.style.display = 'none';
-					else
-						sib.style.display = 'block';
-						
-				}
-			}
-		}
+	checkToggle: function(ctx, type, brandId, productId) {
 		var previous = document.getElementsByClassName('highlight');
 		if (previous.length > 0)
 			previous[0].className = '';
 		ctx.setState({highlight: !ctx.state.highlight});
-			//	console.log("TTTT");
-			//	console.log(ctx.state);
+		
 		if (ctx.state.gotItems)
 			return;
 		switch(type) {
@@ -119,10 +103,13 @@ var PhoneRoot = React.createClass({
 			<div id='phone-tree'>
 				<div className="add-button" onClick={this.addNew}>+</div>
 				<div className="tree root" id="tree-root" key="0">
-					<input type="checkbox" id="root" key="a" onClick={this.checkToggle.bind(null, this, 'root', 'root')} />
+					<input type="checkbox" id="root" key="a" onClick={this.checkToggle.bind(null, this, 'root')} />
 					<label htmlFor="root" key="b" className={this.state.highlight ? "highlight" : ""}>Phones</label>
-					{(this.state.brands.length === 0) ? <div className="tree nocontent"><em>No brands yet</em></div> : null}
-					{brandnodes}
+					{(this.state.highlight)
+					?(	(this.state.brands.length === 0)
+						? <div className="tree nocontent"><em>No brands yet</em></div>
+						: brandnodes)
+					: null}
 				</div>
 			</div>
 		);

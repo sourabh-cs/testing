@@ -33,6 +33,11 @@ public class Product {
     return productName;
   }
   
+  public void setName(String name)
+  {
+    productName = name;
+  }
+  
   public Map<Integer, Device> getDevices()
   {
     return devices;
