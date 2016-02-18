@@ -28,6 +28,11 @@ public class Device {
     return deviceId;
   }
   
+  public void setId(int id)
+  {
+    deviceId = id;
+  }
+  
   public String getName()
   {
     return deviceName;
@@ -41,5 +46,10 @@ public class Device {
   public Map<Integer, Specs> getSpecs()
   {
     return specs;
+  }
+  
+  public void setSpecs(Map<Integer, Specs> map)
+  {
+    specs = map;
   }
 }

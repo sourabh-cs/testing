@@ -1,10 +1,7 @@
-
 var React = require('react');
-var ReactDOM = require('react-dom');
-var dispatcher = require('../app-dispatcher');
 var emitter = require('../emitter');
 var Brand = require('./Brand');
-var Actions = require('../Actions');
+var Actions = require('../actions/Actions');
 var BrandStore = require('../stores/BrandStore');
 	
 var PhoneRoot = React.createClass({

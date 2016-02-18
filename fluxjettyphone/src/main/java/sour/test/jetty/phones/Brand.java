@@ -18,7 +18,7 @@ public class Brand {
   
   public Brand(String name)
   {
-    this.brandId = 54;
+    this.brandId = -1;
     this.brandName = name;
     this.products = new HashMap<Integer, Product>();
   }
@@ -30,9 +30,19 @@ public class Brand {
     this.products = new HashMap<Integer, Product>();
   }
   
+  public void initProducts()
+  {
+    products = new HashMap<Integer, Product>();
+  }
+  
   public int getId()
   {
     return brandId;
+  }
+  
+  public void setId(int id)
+  {
+    brandId = id;
   }
   
   public String getName()
@@ -48,5 +58,10 @@ public class Brand {
   public Map<Integer, Product> getProducts()
   {
     return products;
+  }
+  
+  public void setProducts(Map<Integer, Product> map)
+  {
+    products = map;
   }
 }

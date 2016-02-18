@@ -19,7 +19,7 @@ var SourAjax = {
 	}
 };
 
-var BASE_URL = 'http://localhost:8080/fluxjettyphone/phones/';
+const BASE_URL = 'http://localhost:8080/phones/';
 
 var BrandStore = {
 

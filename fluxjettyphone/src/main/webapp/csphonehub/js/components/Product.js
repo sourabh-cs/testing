@@ -1,8 +1,4 @@
-
 var React = require('react');
-var ReactDOM = require('react-dom');
-var dispatcher = require('../app-dispatcher');
-var emitter = require('../emitter');
 var Device = require('./Device');
 	
 var Product = React.createClass({

@@ -1,7 +1,4 @@
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-var dispatcher = require('./app-dispatcher');
+var dispatcher = require('../app-dispatcher');
 
 var Actions = {
 	getBrandNames: function() {

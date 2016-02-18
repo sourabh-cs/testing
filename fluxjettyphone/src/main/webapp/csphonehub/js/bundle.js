@@ -392,10 +392,25 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],3:[function(require,module,exports){
+var _callbacks = []
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-var dispatcher = require('./app-dispatcher');
+module.exports = Dispatcher
+
+function Dispatcher(){}
+
+Dispatcher.prototype.register = function(cb) {
+  _callbacks.push(cb)
+  return true;
+}
+
+Dispatcher.prototype.dispatch = function(payload) {
+  _callbacks.forEach(function(cb) {
+    cb.call(cb, payload)
+  })
+}
+
+},{}],4:[function(require,module,exports){
+var dispatcher = require('../app-dispatcher');
 
 var Actions = {
 	getBrandNames: function() {
@@ -438,30 +453,12 @@ var Actions = {
 
 module.exports = Actions;
 
-},{"./app-dispatcher":5,"react":168,"react-dom":12}],4:[function(require,module,exports){
-var _callbacks = []
-
-module.exports = Dispatcher
-
-function Dispatcher(){}
-
-Dispatcher.prototype.register = function(cb) {
-  _callbacks.push(cb)
-  return true;
-}
-
-Dispatcher.prototype.dispatch = function(payload) {
-  _callbacks.forEach(function(cb) {
-    cb.call(cb, payload)
-  })
-}
-
-},{}],5:[function(require,module,exports){
+},{"../app-dispatcher":5}],5:[function(require,module,exports){
 var Dispatcher = require('./Dispatcher');
 
 module.exports = new Dispatcher();
 
-},{"./Dispatcher":4}],6:[function(require,module,exports){
+},{"./Dispatcher":3}],6:[function(require,module,exports){
 var React = require('react');
 var ReactDOM = require('react-dom');
 var PhoneRoot = require('./components/PhoneRoot');
@@ -479,11 +476,7 @@ ReactDOM.render(
 );
 
 },{"./components/PhoneRoot":9,"react":168,"react-dom":12}],7:[function(require,module,exports){
-
 var React = require('react');
-var ReactDOM = require('react-dom');
-var dispatcher = require('../app-dispatcher');
-var emitter = require('../emitter');
 var Product = require('./Product');
 	
 var Brand = React.createClass({displayName: "Brand",
@@ -513,12 +506,8 @@ var Brand = React.createClass({displayName: "Brand",
 	
 module.exports = Brand;
 
-},{"../app-dispatcher":5,"../emitter":11,"./Product":10,"react":168,"react-dom":12}],8:[function(require,module,exports){
-
+},{"./Product":10,"react":168}],8:[function(require,module,exports){
 var React = require('react');
-var ReactDOM = require('react-dom');
-var dispatcher = require('../app-dispatcher');
-var emitter = require('../emitter');
 	
 var Device = React.createClass({displayName: "Device",
 	getInitialState: function() {
@@ -541,14 +530,11 @@ var Device = React.createClass({displayName: "Device",
 	
 module.exports = Device;
 
-},{"../app-dispatcher":5,"../emitter":11,"react":168,"react-dom":12}],9:[function(require,module,exports){
-
+},{"react":168}],9:[function(require,module,exports){
 var React = require('react');
-var ReactDOM = require('react-dom');
-var dispatcher = require('../app-dispatcher');
 var emitter = require('../emitter');
 var Brand = require('./Brand');
-var Actions = require('../Actions');
+var Actions = require('../actions/Actions');
 var BrandStore = require('../stores/BrandStore');
 	
 var PhoneRoot = React.createClass({displayName: "PhoneRoot",
@@ -662,12 +648,8 @@ var PhoneRoot = React.createClass({displayName: "PhoneRoot",
 	
 module.exports = PhoneRoot;
 
-},{"../Actions":3,"../app-dispatcher":5,"../emitter":11,"../stores/BrandStore":169,"./Brand":7,"react":168,"react-dom":12}],10:[function(require,module,exports){
-
+},{"../actions/Actions":4,"../emitter":11,"../stores/BrandStore":169,"./Brand":7,"react":168}],10:[function(require,module,exports){
 var React = require('react');
-var ReactDOM = require('react-dom');
-var dispatcher = require('../app-dispatcher');
-var emitter = require('../emitter');
 var Device = require('./Device');
 	
 var Product = React.createClass({displayName: "Product",
@@ -697,7 +679,7 @@ var Product = React.createClass({displayName: "Product",
 	
 module.exports = Product;
 
-},{"../app-dispatcher":5,"../emitter":11,"./Device":8,"react":168,"react-dom":12}],11:[function(require,module,exports){
+},{"./Device":8,"react":168}],11:[function(require,module,exports){
 
 var EventEmitter = require('events');
 
@@ -19664,7 +19646,7 @@ var SourAjax = {
 	}
 };
 
-var BASE_URL = 'http://localhost:8080/fluxjettyphone/phones/';
+const BASE_URL = 'http://localhost:8080/phones/';
 
 var BrandStore = {
 

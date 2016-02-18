@@ -28,6 +28,11 @@ public class Product {
     return productId;
   }
   
+  public void setId(int id)
+  {
+    productId = id;
+  }
+  
   public String getName()
   {
     return productName;
@@ -41,5 +46,10 @@ public class Product {
   public Map<Integer, Device> getDevices()
   {
     return devices;
+  }
+  
+  public void setDevices(Map<Integer, Device> map)
+  {
+    devices = map;
   }
 }

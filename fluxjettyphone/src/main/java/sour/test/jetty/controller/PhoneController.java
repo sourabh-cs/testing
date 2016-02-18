@@ -42,7 +42,7 @@ public class PhoneController {
   @RequestMapping(value = "phones/new", method = RequestMethod.POST)
   public @ResponseBody Brand addBrand(@RequestBody Brand brand)
   {
-    return root.addBrand(brand.getName());
+    return root.addBrand(brand);
   }
   
   @RequestMapping(value = "phones/{brandId}", method = RequestMethod.GET)

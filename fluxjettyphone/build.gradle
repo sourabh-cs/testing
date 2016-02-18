@@ -17,7 +17,10 @@ dependencies {
     compile 'org.springframework:spring-web:4.2.4.RELEASE'
     compile 'org.springframework:spring-webmvc:4.2.4.RELEASE'
     compile 'commons-logging:commons-logging:1.1'
-	compile 'com.fasterxml.jackson.core:jackson-core:2.7.0'
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
+	compile 'com.fasterxml.jackson.core:jackson-core:2.6.5'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.6.5'
     compile 'org.elasticsearch:elasticsearch:2.2.0'
 }
+
+jettyRun.contextPath = ''
+jettyRunWar.contextPath = ''
