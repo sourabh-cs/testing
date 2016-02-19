@@ -23,6 +23,11 @@ public class Product {
   {
   }
   
+  public void initDevices()
+  {
+    devices = new HashMap<Integer, Device>();
+  }
+  
   public int getId()
   {
     return productId;

@@ -1,5 +1,5 @@
-var dispatcher = require('../app-dispatcher');
-var emitter = require('../emitter');
+var dispatcher = require('../core/app-dispatcher');
+var emitter = require('../core/emitter');
 
 var brands = [];
 
@@ -8,13 +8,17 @@ var SourAjax = {
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', url);
 		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.onload = function() {callback(xhr.responseText)};
+		xhr.onload = function() {callback(xhr.responseText);};
+		xhr.onerror = function() {BrandStore.error();};
 		xhr.send(JSON.stringify(payload));
 	},
 	getJSON: function (url, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url);
 		xhr.onload = function() {callback(xhr)};
+		xhr.onerror = function() {
+			BrandStore.error();
+		};
 		xhr.send();
 	}
 };
@@ -23,6 +27,9 @@ const BASE_URL = 'http://localhost:8080/phones/';
 
 var BrandStore = {
 
+	error: function() {
+			emitter.emit('error');
+	},
 	addBrand: function(data){
 		var brandName = data.brandName;
 		var rawPayload = {'name': brandName};

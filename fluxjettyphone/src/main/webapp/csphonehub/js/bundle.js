@@ -392,25 +392,7 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],3:[function(require,module,exports){
-var _callbacks = []
-
-module.exports = Dispatcher
-
-function Dispatcher(){}
-
-Dispatcher.prototype.register = function(cb) {
-  _callbacks.push(cb)
-  return true;
-}
-
-Dispatcher.prototype.dispatch = function(payload) {
-  _callbacks.forEach(function(cb) {
-    cb.call(cb, payload)
-  })
-}
-
-},{}],4:[function(require,module,exports){
-var dispatcher = require('../app-dispatcher');
+var dispatcher = require('../core/app-dispatcher');
 
 var Actions = {
 	getBrandNames: function() {
@@ -453,15 +435,26 @@ var Actions = {
 
 module.exports = Actions;
 
-},{"../app-dispatcher":5}],5:[function(require,module,exports){
-var Dispatcher = require('./Dispatcher');
-
-module.exports = new Dispatcher();
-
-},{"./Dispatcher":3}],6:[function(require,module,exports){
+},{"../core/app-dispatcher":10}],4:[function(require,module,exports){
 var React = require('react');
 var ReactDOM = require('react-dom');
 var PhoneRoot = require('./components/PhoneRoot');
+
+function init() {
+    window.addEventListener('scroll', function(e){
+        var distanceY = window.pageYOffset || document.documentElement.scrollTop;
+        var shrinkOn = 40;
+        if (distanceY > shrinkOn) {
+            document.querySelector('header').classList.add('smaller');
+        } else {
+            if (document.querySelector('header').classList.contains('smaller')) {
+                document.querySelector('header').classList.remove('smaller');
+            }
+        }
+    });
+}
+
+window.onload = init();
 
 ReactDOM.render(
 	React.createElement(PhoneRoot, null),
@@ -475,7 +468,7 @@ ReactDOM.render(
 	}
 );
 
-},{"./components/PhoneRoot":9,"react":168,"react-dom":12}],7:[function(require,module,exports){
+},{"./components/PhoneRoot":7,"react":168,"react-dom":12}],5:[function(require,module,exports){
 var React = require('react');
 var Product = require('./Product');
 	
@@ -506,7 +499,7 @@ var Brand = React.createClass({displayName: "Brand",
 	
 module.exports = Brand;
 
-},{"./Product":10,"react":168}],8:[function(require,module,exports){
+},{"./Product":8,"react":168}],6:[function(require,module,exports){
 var React = require('react');
 	
 var Device = React.createClass({displayName: "Device",
@@ -530,37 +523,44 @@ var Device = React.createClass({displayName: "Device",
 	
 module.exports = Device;
 
-},{"react":168}],9:[function(require,module,exports){
+},{"react":168}],7:[function(require,module,exports){
 var React = require('react');
-var emitter = require('../emitter');
+var emitter = require('../core/emitter');
 var Brand = require('./Brand');
 var Actions = require('../actions/Actions');
 var BrandStore = require('../stores/BrandStore');
 	
 var PhoneRoot = React.createClass({displayName: "PhoneRoot",
 	getInitialState: function() {
-		return {brands: [], highlight: false, gotItems: false};
+		return {brands: [], highlight: false, gotItems: false, loading: false};
+	},
+	getAllFromStore: function() {
+		this.setState({loading: false});
+		return BrandStore.getAllBrands();
 	},
 	componentDidMount: function() {
+		emitter.on("error", function(){
+				this.setState({loading: false});
+		}.bind(this));
 		emitter.on("got-all-brands", function(){
-				this.setState({brands: BrandStore.getAllBrands(), gotItems: true});
+				this.setState({brands: this.getAllFromStore(), gotItems: true});
 		}.bind(this));
 		emitter.on("got-all-products", function(ctx){
-				this.setState({brands: BrandStore.getAllBrands()});
+				this.setState({brands: this.getAllFromStore()});
 				ctx.setState({gotItems: true});
 		}.bind(this));
 		emitter.on("got-all-devices", function(ctx){
-				this.setState({brands: BrandStore.getAllBrands()});
+				this.setState({brands: this.getAllFromStore()});
 				ctx.setState({gotItems: true});
 		}.bind(this));
 		emitter.on("added-brand", function(){
-				this.setState({brands: BrandStore.getAllBrands()});				
+				this.setState({brands: this.getAllFromStore()});				
 		}.bind(this));
 		emitter.on("added-product", function(brandName){
-				this.setState({brands: BrandStore.getAllBrands()});				
+				this.setState({brands: this.getAllFromStore()});				
 		}.bind(this));
 		emitter.on("added-device", function(productName){
-				this.setState({brands: BrandStore.getAllBrands()});				
+				this.setState({brands: this.getAllFromStore()});				
 		}.bind(this));
 	},
 	addBrand: function() {
@@ -610,14 +610,17 @@ var PhoneRoot = React.createClass({displayName: "PhoneRoot",
 			return;
 		switch(type) {
 			case 'root':
+				this.setState({loading: true});
 				Actions.getBrandNames();
 				console.log("ROOOOOOT");
 				break;
 			case 'brand':
+				this.setState({loading: true});
 				Actions.getProductNames(brandId, ctx);
 				console.log("BRAAAAND");
 				break;
 			case 'product':
+				this.setState({loading: true});
 				Actions.getDeviceNames(brandId, productId, ctx);
 				console.log("PRODUUUUCT");
 				break;
@@ -631,12 +634,12 @@ var PhoneRoot = React.createClass({displayName: "PhoneRoot",
 		}.bind(this));
 		return (
 			React.createElement("div", {id: "phone-tree"}, 
-				React.createElement("div", {className: "add-button", onClick: this.addNew}, "+"), 
+				React.createElement("div", {className: this.state.loading ? "add-button loading" : "add-button", onClick: this.addNew}, "+"), 
 				React.createElement("div", {className: "tree root", id: "tree-root", key: "0"}, 
 					React.createElement("input", {type: "checkbox", id: "root", key: "a", onClick: this.checkToggle.bind(null, this, 'root')}), 
 					React.createElement("label", {htmlFor: "root", key: "b", className: this.state.highlight ? "highlight" : ""}, "Phones"), 
 					(this.state.highlight)
-					?(	(this.state.brands.length === 0)
+					?	( (this.state.brands.length === 0)
 						? React.createElement("div", {className: "tree nocontent"}, React.createElement("em", null, "No brands yet"))
 						: brandnodes)
 					: null
@@ -648,7 +651,7 @@ var PhoneRoot = React.createClass({displayName: "PhoneRoot",
 	
 module.exports = PhoneRoot;
 
-},{"../actions/Actions":4,"../emitter":11,"../stores/BrandStore":169,"./Brand":7,"react":168}],10:[function(require,module,exports){
+},{"../actions/Actions":3,"../core/emitter":11,"../stores/BrandStore":169,"./Brand":5,"react":168}],8:[function(require,module,exports){
 var React = require('react');
 var Device = require('./Device');
 	
@@ -679,7 +682,30 @@ var Product = React.createClass({displayName: "Product",
 	
 module.exports = Product;
 
-},{"./Device":8,"react":168}],11:[function(require,module,exports){
+},{"./Device":6,"react":168}],9:[function(require,module,exports){
+var _callbacks = []
+
+module.exports = Dispatcher
+
+function Dispatcher(){}
+
+Dispatcher.prototype.register = function(cb) {
+  _callbacks.push(cb)
+  return true;
+}
+
+Dispatcher.prototype.dispatch = function(payload) {
+  _callbacks.forEach(function(cb) {
+    cb.call(cb, payload)
+  })
+}
+
+},{}],10:[function(require,module,exports){
+var Dispatcher = require('./Dispatcher');
+
+module.exports = new Dispatcher();
+
+},{"./Dispatcher":9}],11:[function(require,module,exports){
 
 var EventEmitter = require('events');
 
@@ -19625,8 +19651,8 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":36}],169:[function(require,module,exports){
-var dispatcher = require('../app-dispatcher');
-var emitter = require('../emitter');
+var dispatcher = require('../core/app-dispatcher');
+var emitter = require('../core/emitter');
 
 var brands = [];
 
@@ -19635,13 +19661,17 @@ var SourAjax = {
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', url);
 		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.onload = function() {callback(xhr.responseText)};
+		xhr.onload = function() {callback(xhr.responseText);};
+		xhr.onerror = function() {BrandStore.error();};
 		xhr.send(JSON.stringify(payload));
 	},
 	getJSON: function (url, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url);
 		xhr.onload = function() {callback(xhr)};
+		xhr.onerror = function() {
+			BrandStore.error();
+		};
 		xhr.send();
 	}
 };
@@ -19650,6 +19680,9 @@ const BASE_URL = 'http://localhost:8080/phones/';
 
 var BrandStore = {
 
+	error: function() {
+			emitter.emit('error');
+	},
 	addBrand: function(data){
 		var brandName = data.brandName;
 		var rawPayload = {'name': brandName};
@@ -19758,4 +19791,4 @@ var BrandStore = {
 
 module.exports = BrandStore;
 
-},{"../app-dispatcher":5,"../emitter":11}]},{},[6]);
+},{"../core/app-dispatcher":10,"../core/emitter":11}]},{},[4]);

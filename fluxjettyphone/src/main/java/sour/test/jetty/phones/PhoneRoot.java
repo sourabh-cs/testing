@@ -1,18 +1,26 @@
 package sour.test.jetty.phones;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import sour.test.jetty.phones.helperobject.DevicesObject;
+import sour.test.jetty.phones.helperobject.ProductsObject;
 
 public class PhoneRoot {
   
@@ -37,12 +45,22 @@ public class PhoneRoot {
     client = node.client();
     node.client().admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
     brands = new HashMap<Integer, Brand>();
-    SearchResponse sr = client.prepareSearch().execute().actionGet();
+    boolean exists = client.admin().indices().prepareExists(INDEX).execute().actionGet().isExists();
+    if (!exists)
+      return;
+    SearchResponse sr = client.prepareSearch(INDEX).setTypes(TYPE).setFetchSource("name", "")
+        .execute().actionGet();
     for (SearchHit sh : sr.getHits()) {
-      Brand brand = mapper.convertValue(sh.getSource(), Brand.class);
-      System.out.println("Brand name: " + brand.getName());
-      brands.put(brand.getId(), brand);
+      System.out.println(sh.getType() + "Hit: " + sh.getId());
+      System.out.println(sh.getType() + "Hit: " + sh.getSource());
+      int id = Integer.parseInt(sh.getId());
+      Map<String, Object> map = new HashMap<String, Object>();
+      map = sh.getSource();
+      String name = (String) map.get("name");
+      Brand brand = new Brand(id, name);
+      brands.put(id, brand);
     }
+    // getProductNames(0);
   }
   
   public Map<Integer, Brand> getBrands()
@@ -65,7 +83,6 @@ public class PhoneRoot {
     String brandJson = mapper.writeValueAsString(brand);
     client.prepareIndex(INDEX, TYPE, String.valueOf(brandId)).setSource(brandJson).execute()
         .actionGet();
-    getBrandDocument(String.valueOf(brandId));
   }
   
   public Brand addBrand(Brand brand)
@@ -107,12 +124,58 @@ public class PhoneRoot {
   public Map<Integer, String> getProductNames(int brandId)
   {
     Map<Integer, String> productNames = new HashMap<Integer, String>();
-    Brand brand = getBrand(brandId);
-    Map<Integer, Product> products = brand.getProducts();
-    for (Product product : products.values()) {
-      productNames.put(product.getId(), product.getName());
+    GetResponse response = client.prepareGet(INDEX, TYPE, String.valueOf(brandId))
+        .setFetchSource("products", "*.devices").execute().actionGet();
+    Map<String, Object> source = response.getSource();
+    Map<Integer, Object> productMap;
+    if (source.get("products") instanceof Map)
+      productMap = (Map<Integer, Object>) source.get("products");
+    else
+      return productNames;
+      
+    for (Object o : productMap.values()) {
+      try {
+        String s = mapper.writeValueAsString(o);
+        System.out.println(s);
+        Product product = mapper.readValue(s, Product.class);
+        product.initDevices();
+        brands.get(brandId).getProducts().put(product.getId(), product);
+        productNames.put(product.getId(), product.getName());
+      }
+      catch (JsonParseException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      catch (JsonMappingException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
     return productNames;
+  }
+  
+  public void updateProductInElastic(int brandId, Product product) throws JsonProcessingException
+  {
+    ProductsObject doc = new ProductsObject(product);
+    String productJson = mapper.writeValueAsString(doc);
+    System.out.println(productJson);
+    UpdateRequest updateRequest = new UpdateRequest(INDEX, TYPE, String.valueOf(brandId))
+        .doc(productJson);
+    try {
+      client.update(updateRequest).get();
+    }
+    catch (ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
   
   public Product addProduct(int brandId, String productName)
@@ -123,7 +186,7 @@ public class PhoneRoot {
     Product product = new Product(productId, productName);
     products.put(productId, product);
     try {
-      addBrandToElastic(brand);
+      updateProductInElastic(brandId, product);
       return product;
     }
     catch (JsonProcessingException e) {
@@ -144,11 +207,62 @@ public class PhoneRoot {
   public Map<Integer, String> getDeviceNames(int brandId, int productId)
   {
     Map<Integer, String> deviceNames = new HashMap<Integer, String>();
-    Product product = getProduct(brandId, productId);
-    for (Device device : product.getDevices().values()) {
-      deviceNames.put(device.getId(), device.getName());
+    String include = "*." + productId + ".devices";
+    System.out.println("Include: " + include);
+    GetResponse response = client.prepareGet(INDEX, TYPE, String.valueOf(brandId))
+        .setFetchSource(include, "").execute().actionGet();
+    try {
+      Map<String, Object> source = response.getSource();
+      String s0 = mapper.writeValueAsString(source);
+      System.out.println("Source: " + s0);
+      
+      Map<Integer, Object> productMap = (Map<Integer, Object>) source.get("products");
+      String s1 = mapper.writeValueAsString(productMap);
+      System.out.println("int/obj productmap: " + s1);
+      
+      Map<String, Object> devicesMap = (Map<String, Object>) productMap
+          .get(String.valueOf(productId));
+      String s2 = mapper.writeValueAsString(devicesMap);
+      System.out.println("str/obj devicesmap: " + s2);
+      String s = mapper.writeValueAsString(devicesMap);
+      System.out.println("productmap productid " + s);
+      Product product = mapper.readValue(s, Product.class);
+      for (Device device : product.getDevices().values()) {
+        deviceNames.put(device.getId(), device.getName());
+      }
+      brands.get(brandId).getProducts().get(productId).setDevices(product.getDevices());
+      return deviceNames;
+    }
+    catch (JsonProcessingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     return deviceNames;
+  }
+  
+  public void updateDeviceInElastic(int brandId, int productId, Device device)
+      throws JsonProcessingException
+  {
+    DevicesObject doc = new DevicesObject(productId, device);
+    String deviceJson = mapper.writeValueAsString(doc);
+    System.out.println(deviceJson);
+    UpdateRequest updateRequest = new UpdateRequest(INDEX, TYPE, String.valueOf(brandId))
+        .doc(deviceJson);
+    try {
+      client.update(updateRequest).get();
+    }
+    catch (ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
   
   public Device addDevice(int brandId, int productId, String deviceName)
@@ -161,7 +275,7 @@ public class PhoneRoot {
     Device device = new Device(deviceId, deviceName);
     devices.put(deviceId, device);
     try {
-      addBrandToElastic(brand);
+      updateDeviceInElastic(brandId, product.getId(), device);
       return device;
     }
     catch (JsonProcessingException e) {

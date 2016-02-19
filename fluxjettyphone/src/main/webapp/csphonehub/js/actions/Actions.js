@@ -1,4 +1,4 @@
-var dispatcher = require('../app-dispatcher');
+var dispatcher = require('../core/app-dispatcher');
 
 var Actions = {
 	getBrandNames: function() {

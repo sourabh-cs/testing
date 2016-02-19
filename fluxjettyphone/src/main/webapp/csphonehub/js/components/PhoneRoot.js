@@ -1,33 +1,40 @@
 var React = require('react');
-var emitter = require('../emitter');
+var emitter = require('../core/emitter');
 var Brand = require('./Brand');
 var Actions = require('../actions/Actions');
 var BrandStore = require('../stores/BrandStore');
 	
 var PhoneRoot = React.createClass({
 	getInitialState: function() {
-		return {brands: [], highlight: false, gotItems: false};
+		return {brands: [], highlight: false, gotItems: false, loading: false};
+	},
+	getAllFromStore: function() {
+		this.setState({loading: false});
+		return BrandStore.getAllBrands();
 	},
 	componentDidMount: function() {
+		emitter.on("error", function(){
+				this.setState({loading: false});
+		}.bind(this));
 		emitter.on("got-all-brands", function(){
-				this.setState({brands: BrandStore.getAllBrands(), gotItems: true});
+				this.setState({brands: this.getAllFromStore(), gotItems: true});
 		}.bind(this));
 		emitter.on("got-all-products", function(ctx){
-				this.setState({brands: BrandStore.getAllBrands()});
+				this.setState({brands: this.getAllFromStore()});
 				ctx.setState({gotItems: true});
 		}.bind(this));
 		emitter.on("got-all-devices", function(ctx){
-				this.setState({brands: BrandStore.getAllBrands()});
+				this.setState({brands: this.getAllFromStore()});
 				ctx.setState({gotItems: true});
 		}.bind(this));
 		emitter.on("added-brand", function(){
-				this.setState({brands: BrandStore.getAllBrands()});				
+				this.setState({brands: this.getAllFromStore()});				
 		}.bind(this));
 		emitter.on("added-product", function(brandName){
-				this.setState({brands: BrandStore.getAllBrands()});				
+				this.setState({brands: this.getAllFromStore()});				
 		}.bind(this));
 		emitter.on("added-device", function(productName){
-				this.setState({brands: BrandStore.getAllBrands()});				
+				this.setState({brands: this.getAllFromStore()});				
 		}.bind(this));
 	},
 	addBrand: function() {
@@ -77,14 +84,17 @@ var PhoneRoot = React.createClass({
 			return;
 		switch(type) {
 			case 'root':
+				this.setState({loading: true});
 				Actions.getBrandNames();
 				console.log("ROOOOOOT");
 				break;
 			case 'brand':
+				this.setState({loading: true});
 				Actions.getProductNames(brandId, ctx);
 				console.log("BRAAAAND");
 				break;
 			case 'product':
+				this.setState({loading: true});
 				Actions.getDeviceNames(brandId, productId, ctx);
 				console.log("PRODUUUUCT");
 				break;
@@ -98,12 +108,12 @@ var PhoneRoot = React.createClass({
 		}.bind(this));
 		return (
 			<div id='phone-tree'>
-				<div className="add-button" onClick={this.addNew}>+</div>
+				<div className={this.state.loading ? "add-button loading" : "add-button"} onClick={this.addNew}>+</div>
 				<div className="tree root" id="tree-root" key="0">
 					<input type="checkbox" id="root" key="a" onClick={this.checkToggle.bind(null, this, 'root')} />
 					<label htmlFor="root" key="b" className={this.state.highlight ? "highlight" : ""}>Phones</label>
 					{(this.state.highlight)
-					?(	(this.state.brands.length === 0)
+					?	( (this.state.brands.length === 0)
 						? <div className="tree nocontent"><em>No brands yet</em></div>
 						: brandnodes)
 					: null}

@@ -10,15 +10,28 @@ body {
 	height: 100%;
 }
 header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
     padding: 25px;
     background: #f57200;
     color: #fff;
     font-family: Cambria;
 	box-shadow: 0 2px 10px #666;
+    transition: all 0.3s;
 }
 header h1 {
     text-align: center;
 	text-shadow: 1px 1px 2px #444;
+    transition: all 0.3s;
+}
+header.smaller {
+    padding: 15px;
+}
+header.smaller h1 {
+    text-align: left;
+    font-size: 14pt;
 }
 footer {
 	text-align: center;
@@ -33,9 +46,36 @@ h2 {
     font-weight: normal;
 }
 .container {
-    padding-top: 50px;
+    margin-top: 100px;
 	position: relative;
 	margin-bottom:  10px;
+    height: 1200px;
+}
+#phone-tree {
+    position: relative;
+}
+.add-button {
+    width: 20px;
+    height: 20px;
+    background-color: #2bc36a;
+    display: inline;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 3px #666;
+    padding: 10px 8px 16px 16px;
+    top: 120px;
+    position: fixed;
+    margin-left: auto;
+    margin-right: auto;
+    left: 30px;
+    right: 0;
+    z-index: 102;
+}
+#tree-root {
+    position: absolute;
+    top: 70px;
 }
 .tree {
     padding: 10px;
@@ -91,24 +131,6 @@ tr:nth-child(even) {
     background-color: #f57c00;
     color: #fff;
 }
-.add-button {
-width: 20px;
-height: 20px;
-background-color: #2bc36a;
-display: inline;
-border-radius: 50%;
-color: #fff;
-font-weight: bold;
-cursor: pointer;
-box-shadow: 0 0 3px #666;
-padding: 10px 8px 16px 16px;
-position: absolute;
-top: 10px;
-margin-left: auto;
-margin-right: auto;
-left: 0;
-right: 0;
-}
 .add-device {
 	background: none;
 }
@@ -139,6 +161,12 @@ background-size: 18px;
 .highlight {
 	background-color: #2bc36a;
 	color: #eff;
+}
+.loading {
+    background-image: url('../img/loading.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+    font-size: 0pt;
 }
 
 .nocontent {
