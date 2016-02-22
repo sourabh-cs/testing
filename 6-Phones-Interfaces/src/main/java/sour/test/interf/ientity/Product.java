@@ -54,7 +54,7 @@ public class Product implements IProduct {
   }
   
   @Override
-  public Map<Integer, IDevice> getDevice()
+  public Map<Integer, IDevice> getDevices()
   {
     return devices;
   }

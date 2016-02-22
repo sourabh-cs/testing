@@ -19,7 +19,7 @@ public interface IProduct {
   
   void setName(String name);
   
-  Map<Integer, IDevice> getDevice();
+  Map<Integer, IDevice> getDevices();
   
   void setDevices(Map<Integer, IDevice> map);
   

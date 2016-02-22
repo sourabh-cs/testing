@@ -38,41 +38,55 @@ var PhoneRoot = React.createClass({
 		}.bind(this));
 	},
 	addBrand: function() {
-		var brand = prompt('Enter brand name');
-		if (!brand)
-			return;
-		Actions.addBrand(brand);
 	},
 	addProduct: function(brandId) {
-		var product = prompt('Enter product name');
-		if (!product)
-			return;
-		Actions.addProduct(brandId, product);
 	},
 	addDevice: function(brand, product) {
-		var device = prompt('Enter device name');
-		if (!device)
-			return;
-		Actions.addDevice(brand, product, device);
+		Actions.addDevice(brand, product);
 	},
-	addNew: function() {
+	getHighlighted: function() {
+		var obj = {'type': '', 'brandId': '', 'productId': '', 'deviceId': ''};
 		if (document.getElementsByClassName('highlight').length === 0)
 			return;
 		var highlighted = document.getElementsByClassName('highlight')[0];
 		var parentClasses = highlighted.parentNode.classList;
 		if (parentClasses.contains('root')) {
-			console.log('Adding brand');
-			this.addBrand();
+			obj.type = 'root';
 		}
 		else if (parentClasses.contains('brand')) {
-			console.log('Adding product');
-			this.addProduct(highlighted.htmlFor);
+			obj.type = 'brand';
+			obj.brandId = highlighted.htmlFor;
 		}
 		else if (parentClasses.contains('product')) {
-			console.log('Adding device');
+			obj.type = 'product';
 			var htmlfor = highlighted.htmlFor.split('$');
-			this.addDevice(htmlfor[0], htmlfor[1]);
+			obj.brandId = htmlfor[0];
+			obj.productId = htmlfor[1];
 		}
+		return obj;
+
+	},
+	addNew: function() {
+		var highlighted = this.getHighlighted();
+		switch(highlighted.type) {
+			case 'root':
+				console.log('Adding brand');
+				Actions.addBrand();
+				break;
+			case 'brand':
+				console.log('Adding product');
+				Actions.addProduct(highlighted.brandId);
+				break;
+			case 'product':
+				console.log('Adding device');
+				this.addDevice(highlighted.brandId, highlighted.productId);
+				break;
+			default: 
+				console.log('Invalid');
+		}
+	},
+	deleteEntity: function() {
+
 	},
 	checkToggle: function(ctx, type, brandId, productId) {
 		var previous = document.getElementsByClassName('highlight');
@@ -108,7 +122,14 @@ var PhoneRoot = React.createClass({
 		}.bind(this));
 		return (
 			<div id='phone-tree'>
-				<div className={this.state.loading ? "add-button loading" : "add-button"} onClick={this.addNew}>+</div>
+				<div className="fobs">
+					<div className={this.state.loading ? "fob add-button loading" : "fob add-button"} onClick={this.addNew}>
+						<span>+</span>
+					</div>
+					<div className={this.state.loading ? "fob del-button loading" : "fob del-button"} onClick={this.deleteEntity}>
+						<span>-</span>
+					</div>
+				</div>
 				<div className="tree root" id="tree-root" key="0">
 					<input type="checkbox" id="root" key="a" onClick={this.checkToggle.bind(null, this, 'root')} />
 					<label htmlFor="root" key="b" className={this.state.highlight ? "highlight" : ""}>Phones</label>

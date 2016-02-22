@@ -413,19 +413,28 @@ var Actions = {
 			data: {brandId: brandId, productId: productId, ctx: ctx}
 		});
 	},
-	addBrand: function(brand) {
+	addBrand: function() {
+		var brand = prompt('Enter brand name');
+		if (!brand)
+			return;
 		dispatcher.dispatch({
 			type: 'add-brand',
 			data: {brandName: brand}
 		});
 	},
-	addProduct: function(brandId, productName) {
+	addProduct: function(brandId) {
+		var productName = prompt('Enter product name');
+		if (!productName)
+			return;
 		dispatcher.dispatch({
 			type: 'add-product',
 			data: {brandId: brandId, productName: productName}
 		});
 	},
-	addDevice: function(brandId, productId, deviceName) {
+	addDevice: function(brandId, productId) {
+		var deviceName = prompt('Enter device name');
+		if (!deviceName)
+			return;
 		dispatcher.dispatch({
 			type: 'add-device',
 			data: {brandId: brandId, productId: productId, deviceName: deviceName}
@@ -564,41 +573,58 @@ var PhoneRoot = React.createClass({displayName: "PhoneRoot",
 		}.bind(this));
 	},
 	addBrand: function() {
-		var brand = prompt('Enter brand name');
-		if (!brand)
-			return;
-		Actions.addBrand(brand);
+		Actions.addBrand();
 	},
 	addProduct: function(brandId) {
-		var product = prompt('Enter product name');
-		if (!product)
-			return;
-		Actions.addProduct(brandId, product);
+		Actions.addProduct(brandId);
 	},
 	addDevice: function(brand, product) {
-		var device = prompt('Enter device name');
-		if (!device)
-			return;
-		Actions.addDevice(brand, product, device);
+		Actions.addDevice(brand, product);
 	},
-	addNew: function() {
+	getHighlighted: function() {
+		var obj = {'type': '', 'brandId': '', 'productId': '', 'deviceId': ''};
 		if (document.getElementsByClassName('highlight').length === 0)
 			return;
 		var highlighted = document.getElementsByClassName('highlight')[0];
 		var parentClasses = highlighted.parentNode.classList;
 		if (parentClasses.contains('root')) {
-			console.log('Adding brand');
-			this.addBrand();
+			obj.type = 'root';
 		}
 		else if (parentClasses.contains('brand')) {
-			console.log('Adding product');
-			this.addProduct(highlighted.htmlFor);
+			obj.type = 'brand';
+			obj.brandId = highlighted.htmlFor;
 		}
 		else if (parentClasses.contains('product')) {
-			console.log('Adding device');
+			obj.type = 'product';
 			var htmlfor = highlighted.htmlFor.split('$');
-			this.addDevice(htmlfor[0], htmlfor[1]);
+			obj.brandId = htmlfor[0];
+			obj.productId = htmlfor[1];
 		}
+		return obj;
+
+	},
+	addNew: function() {
+		var highlighted = this.getHighlighted();
+		console.log(highlighted);
+		switch(highlighted.type) {
+			case 'root':
+				console.log('Adding brand');
+				this.addBrand();
+				break;
+			case 'brand':
+				console.log('Adding product');
+				this.addProduct(highlighted.brandId);
+				break;
+			case 'product':
+				console.log('Adding device');
+				this.addDevice(highlighted.brandId, highlighted.productId);
+				break;
+			default: 
+				console.log('Invalid');
+		}
+	},
+	deleteEntity: function() {
+
 	},
 	checkToggle: function(ctx, type, brandId, productId) {
 		var previous = document.getElementsByClassName('highlight');
@@ -634,7 +660,14 @@ var PhoneRoot = React.createClass({displayName: "PhoneRoot",
 		}.bind(this));
 		return (
 			React.createElement("div", {id: "phone-tree"}, 
-				React.createElement("div", {className: this.state.loading ? "add-button loading" : "add-button", onClick: this.addNew}, "+"), 
+				React.createElement("div", {className: "fobs"}, 
+					React.createElement("div", {className: this.state.loading ? "fob add-button loading" : "fob add-button", onClick: this.addNew}, 
+						React.createElement("span", null, "+")
+					), 
+					React.createElement("div", {className: this.state.loading ? "fob del-button loading" : "fob del-button", onClick: this.deleteEntity}, 
+						React.createElement("span", null, "-")
+					)
+				), 
 				React.createElement("div", {className: "tree root", id: "tree-root", key: "0"}, 
 					React.createElement("input", {type: "checkbox", id: "root", key: "a", onClick: this.checkToggle.bind(null, this, 'root')}), 
 					React.createElement("label", {htmlFor: "root", key: "b", className: this.state.highlight ? "highlight" : ""}, "Phones"), 

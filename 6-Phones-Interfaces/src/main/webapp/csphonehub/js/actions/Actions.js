@@ -19,19 +19,28 @@ var Actions = {
 			data: {brandId: brandId, productId: productId, ctx: ctx}
 		});
 	},
-	addBrand: function(brand) {
+	addBrand: function() {
+		var brand = prompt('Enter brand name');
+		if (!brand)
+			return;
 		dispatcher.dispatch({
 			type: 'add-brand',
 			data: {brandName: brand}
 		});
 	},
-	addProduct: function(brandId, productName) {
+	addProduct: function(brandId) {
+		var productName = prompt('Enter product name');
+		if (!productName)
+			return;
 		dispatcher.dispatch({
 			type: 'add-product',
 			data: {brandId: brandId, productName: productName}
 		});
 	},
-	addDevice: function(brandId, productId, deviceName) {
+	addDevice: function(brandId, productId) {
+		var deviceName = prompt('Enter device name');
+		if (!deviceName)
+			return;
 		dispatcher.dispatch({
 			type: 'add-device',
 			data: {brandId: brandId, productId: productId, deviceName: deviceName}

@@ -54,24 +54,43 @@ h2 {
 #phone-tree {
     position: relative;
 }
-.add-button {
-    width: 20px;
-    height: 20px;
-    background-color: #2bc36a;
-    display: inline;
-    border-radius: 50%;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 0 3px #666;
-    padding: 10px 8px 16px 16px;
-    top: 120px;
+.fobs {
+    width: 40px;
     position: fixed;
     margin-left: auto;
     margin-right: auto;
+    top: 120px;
     left: 30px;
     right: 0;
     z-index: 102;
+
+}
+.fob {
+	width: 15px;
+    height: 15px;
+    background-color: #2bc36a;
+    display: block;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 3px #666;
+    padding: 6px 10px 16px 16px;
+    color: #fff;
+    font-weight: bold;	
+}
+.add-button {
+}
+.del-button {
+	margin-top: 10px;
+	opacity: 0.8;
+	display: none;
+}
+.fobs:hover {
+}
+.fobs:hover .del-button {
+	display: block;
+}
+.del-button span {
+    padding-left: 2px;
 }
 #tree-root {
     position: absolute;
