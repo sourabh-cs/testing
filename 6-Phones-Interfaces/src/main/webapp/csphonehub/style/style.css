@@ -1,0 +1,175 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+html {
+	height: 100%;
+}
+body {
+    font-family: 'Segoe UI', sans-serif;
+	height: 100%;
+}
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 25px;
+    background: #f57200;
+    color: #fff;
+    font-family: Cambria;
+	box-shadow: 0 2px 10px #666;
+    transition: all 0.3s;
+}
+header h1 {
+    text-align: center;
+	text-shadow: 1px 1px 2px #444;
+    transition: all 0.3s;
+}
+header.smaller {
+    padding: 15px;
+}
+header.smaller h1 {
+    text-align: left;
+    font-size: 14pt;
+}
+footer {
+	text-align: center;
+	margin-bottom: 10px;
+	font-size: 8pt;
+	position:fixed;
+	width: 100%;
+	bottom:0;
+}
+h2 {
+    text-align: center;
+    font-weight: normal;
+}
+.container {
+    margin-top: 100px;
+	position: relative;
+	margin-bottom:  10px;
+    height: 1200px;
+}
+#phone-tree {
+    position: relative;
+}
+.add-button {
+    width: 20px;
+    height: 20px;
+    background-color: #2bc36a;
+    display: inline;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 3px #666;
+    padding: 10px 8px 16px 16px;
+    top: 120px;
+    position: fixed;
+    margin-left: auto;
+    margin-right: auto;
+    left: 30px;
+    right: 0;
+    z-index: 102;
+}
+#tree-root {
+    position: absolute;
+    top: 70px;
+}
+.tree {
+    padding: 10px;
+	position: relative;
+}
+.tree-hover {
+    color: #999;
+}
+.root {
+    margin-left: 10px;
+}
+.brand {
+    margin-left: 30px;
+}
+.product {
+    margin-left: 20px;
+}
+.device {
+    margin-left: 20px;
+	padding-left: 18px;
+	background: url('../img/ic-phone.png');
+	background-repeat: no-repeat;
+	background-position: 15px 16px;
+	background-size: 12px;
+}
+.device::before {
+    content: "\0000a0";
+    background: url("../img/ic-phone.png") no-repeat;
+}
+#list-phones {
+    float: left;
+    min-width: 30%;
+}
+#specs {
+    float: right;
+    margin: 10px;
+    min-width: 60%;
+    text-align: center;
+}
+.device-info {
+    text-align: center;
+}
+table {
+    border: 1px solid #f57c00;
+    font-size: 10pt;
+    width: 80%;
+    margin: 20px auto;
+}
+td {
+    padding: 10px;
+}
+tr:nth-child(even) {
+    background-color: #f57c00;
+    color: #fff;
+}
+.add-device {
+	background: none;
+}
+input[type="checkbox"] {
+	position: absolute;
+	left: 0;
+	top: 13px;
+	visibility: hidden;
+}
+label {
+	margin-left: 5px;
+	cursor: pointer;
+	padding: 5px;
+}
+input[type=checkbox]:before { content:""; display:inline-block; width:16px; height:16px; background:red;
+	visibility: visible; }
+input[type=checkbox]:checked:before { background:green;
+	visibility: visible; }
+/* images */
+input[type=checkbox]:before { background: url('../img/unchecked.png') no-repeat;
+background-size: 18px;
+
+}
+input[type=checkbox]:checked:before{ background: url('../img/checked.png') no-repeat;
+background-size: 18px;
+}
+
+.highlight {
+	background-color: #2bc36a;
+	color: #eff;
+}
+.loading {
+    background-image: url('../img/loading.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+    font-size: 0pt;
+}
+
+.nocontent {
+	margin-left: 10px;
+	margin-top: 5px;
+}
